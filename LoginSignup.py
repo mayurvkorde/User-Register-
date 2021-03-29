@@ -104,33 +104,3 @@ def login():
                 return Response(json.dumps({"Status_code": 404, "Message": "Password does not match"}), status=404,mimetype='application/json')
 
         return Response(json.dumps({"Status_code": 404, "Message": "Email does not exist"}), status=404,mimetype='application/json')
-
-
-@app.route('/imageupload',methods=["POST"])
-def upload():
-    if request.method=="POST":
-        # json object
-        jsonRegister = request.get_json()
-        # Users field
-        id = jsonRegister['id']
-        path = jsonRegister['path']
-
-        cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-
-        # Convert digital data to binary format
-        
-        cursor.execute("insert into uploadimage (id,images) values (%s,%s)",(id,path))
-        db.connection.commit()
-        cursor.execute("select serialId from users.uploadimage  where id='" + id + "'ORDER BY serialId DESC" )
-        fetchValueFromQuary = cursor.fetchall()
-        
-        response = {
-            "status_code": 200,
-            "Message": "Image uploaded successfully",
-            "Id": fetchValueFromQuary[0]['serialId']
-        }
-
-        return Response(json.dumps(response), status=200, mimetype='application/json')
-
-        
-    db.connection.close()
